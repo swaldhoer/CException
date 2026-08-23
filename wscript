@@ -5,7 +5,12 @@
 #     SPDX-License-Identifier: MIT
 # =========================================================================
 
-""" """
+"""Test CException for different compilers and platforms.
+
+Supported variants are:
+- Linux: GCC, Clang
+- Windows:. GCC, MSVC
+"""
 
 from waflib import Context, Errors, Logs, Utils
 from waflib.Tools import waf_unit_test
