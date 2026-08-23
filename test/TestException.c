@@ -5,8 +5,33 @@
     SPDX-License-Identifier: MIT
 ========================================================================= */
 
+#ifndef BARE_TEST
 #include "unity.h"
+#endif // BARE_TEST
 #include "CException.h"
+
+#ifdef BARE_TEST
+#include <assert.h>
+#include <stdio.h>
+#include <stdbool.h>
+#endif  // BARE_TEST
+
+#ifdef BARE_TEST
+
+#ifndef TEST_FAIL_MESSAGE
+#define TEST_FAIL_MESSAGE(x) fprintf(stderr, "%s", x)
+#endif // TEST_FAIL_MESSAGE
+
+void TEST_ASSERT_EQUAL(unsigned int a, CEXCEPTION_T b) {
+  assert(a == b);
+}
+
+void TEST_ASSERT_FALSE(unsigned int a) {
+  if (a != false) {
+    assert(false);
+  }
+}
+#endif // BARE_TEST
 
 volatile int TestingTheFallback;
 volatile int TestingTheFallbackId;
@@ -313,6 +338,9 @@ void test_CanHaveNestedTryBlocksInASingleFunction_ThrowOutside(void)
   TEST_ASSERT_EQUAL(2, i);
 }
 
+#ifdef CEXCEPTION_USE_CONFIG_FILE
+// This test only makes sense to run when CException was built using the
+// customized configuration test/support/CExceptionConfig.h
 void test_AThrowWithoutATryCatchWillUseDefaultHandlerIfSpecified(void)
 {
     //Let the fallback handler know we're expecting it to get called this time, so don't fail
@@ -324,7 +352,11 @@ void test_AThrowWithoutATryCatchWillUseDefaultHandlerIfSpecified(void)
     TEST_ASSERT_FALSE(TestingTheFallback);
     TEST_ASSERT_EQUAL(0xBE, TestingTheFallbackId);
 }
+#endif // CEXCEPTION_USE_CONFIG_FILE
 
+#ifdef CEXCEPTION_USE_CONFIG_FILE
+// This test only makes sense to run when CException was built using the
+// customized configuration test/support/CExceptionConfig.h
 void test_AThrowWithoutOutsideATryCatchWillUseDefaultHandlerEvenAfterTryCatch(void)
 {
     CEXCEPTION_T e;
@@ -347,6 +379,7 @@ void test_AThrowWithoutOutsideATryCatchWillUseDefaultHandlerEvenAfterTryCatch(vo
     TEST_ASSERT_FALSE(TestingTheFallback);
     TEST_ASSERT_EQUAL(0xBE, TestingTheFallbackId);
 }
+#endif // CEXCEPTION_USE_CONFIG_FILE
 
 void test_AbilityToExitTryWithoutThrowingAnError(void)
 {
@@ -396,3 +429,44 @@ void test_AbilityToExitTryWillOnlyExitOneLevel(void)
     // verify that we picked up and ran after first Try
     TEST_ASSERT_EQUAL(1, i);
 }
+
+#ifdef BARE_TEST
+int main() {
+  printf("SetUp\n");
+  setUp();
+  printf("test_BasicTryDoesNothingIfNoThrow\n");
+  test_BasicTryDoesNothingIfNoThrow();
+  printf("test_BasicThrowAndCatch\n");
+  test_BasicThrowAndCatch();
+  printf("test_BasicThrowAndCatch_WithMiniSyntax\n");
+  test_BasicThrowAndCatch_WithMiniSyntax();
+  printf("test_VerifyVolatilesSurviveThrowAndCatch\n");
+  test_VerifyVolatilesSurviveThrowAndCatch();
+  printf("test_ThrowFromASubFunctionAndCatchInRootFunc\n");
+  test_ThrowFromASubFunctionAndCatchInRootFunc();
+  printf("test_ThrowAndCatchFromASubFunctionAndRethrowToCatchInRootFunc\n");
+  test_ThrowAndCatchFromASubFunctionAndRethrowToCatchInRootFunc();
+  printf("test_ThrowAndCatchFromASubFunctionAndNoRethrowToCatchInRootFunc\n");
+  test_ThrowAndCatchFromASubFunctionAndNoRethrowToCatchInRootFunc();
+  printf("test_ThrowAnErrorThenEnterATryBlockFromWithinCatch_VerifyThisDoesntCorruptExceptionId\n");
+  test_ThrowAnErrorThenEnterATryBlockFromWithinCatch_VerifyThisDoesntCorruptExceptionId();
+  printf("test_ThrowAnErrorThenEnterATryBlockFromWithinCatch_VerifyThatEachExceptionIdIndependent\n");
+  test_ThrowAnErrorThenEnterATryBlockFromWithinCatch_VerifyThatEachExceptionIdIndependent();
+  printf("test_CanHaveMultipleTryBlocksInASingleFunction\n");
+  test_CanHaveMultipleTryBlocksInASingleFunction();
+  printf("test_CanHaveNestedTryBlocksInASingleFunction_ThrowInside\n");
+  test_CanHaveNestedTryBlocksInASingleFunction_ThrowInside();
+  printf("test_CanHaveNestedTryBlocksInASingleFunction_ThrowOutside\n");
+  test_CanHaveNestedTryBlocksInASingleFunction_ThrowOutside();
+  printf("test_AThrowWithoutATryCatchWillUseDefaultHandlerIfSpecified\n");
+  test_AThrowWithoutATryCatchWillUseDefaultHandlerIfSpecified();
+  printf("test_AThrowWithoutOutsideATryCatchWillUseDefaultHandlerEvenAfterTryCatch\n");
+  test_AThrowWithoutOutsideATryCatchWillUseDefaultHandlerEvenAfterTryCatch();
+  printf("test_AbilityToExitTryWithoutThrowingAnError\n");
+  test_AbilityToExitTryWithoutThrowingAnError();
+  printf("test_AbilityToExitTryWillOnlyExitOneLevel\n");
+  test_AbilityToExitTryWillOnlyExitOneLevel();
+  printf("tearDown\n");
+  tearDown();
+}
+#endif // BARE_TEST

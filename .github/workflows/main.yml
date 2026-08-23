@@ -6,28 +6,58 @@ name: CI
 # Triggers the workflow on push or pull request events but only for the master branch
 on:
   push:
-    branches: [ master ]
   pull_request:
     branches: [ master ]
 
 jobs:
   # Job: Unit test suite
   unit-tests:
-    name: "Unit Tests"
+    # name: "Unit Tests"
+    # runs-on: ubuntu-latest
+    # steps:
+    #   # Checks out repository under $GITHUB_WORKSPACE
+    #   - name: Checkout Latest Repo
+    #     uses: actions/checkout@v4
+    #     with:
+    #       submodules: recursive
+          
+    #   # Install Ceedling
+    #   - name: Install Ceedling
+    #     run: |
+    #       sudo gem install ceedling
+
+    #   # Run Tests
+    #   - name: Run All Self Tests
+    #     run: |
+    #       ceedling clobber test:all
+
+    name: "Unit Tests (Bare GCC)"
     runs-on: ubuntu-latest
     steps:
-      # Checks out repository under $GITHUB_WORKSPACE
       - name: Checkout Latest Repo
-        uses: actions/checkout@v4
-        with:
-          submodules: recursive
+        uses: actions/checkout@v7.0.1
           
-      # Install Ceedling
-      - name: Install Ceedling
-        run: |
-          sudo gem install ceedling
+      - name: Install Python 3
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
 
-      # Run Tests
-      - name: Run All Self Tests
+      - name: Cache pip packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Create virtual environment
         run: |
-          ceedling clobber test:all
+          python3 -m venv .venv
+          source .venv/bin/activate
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run build and test
+        run: |
+          source .venv/bin/activate
+          python waf configure build -v

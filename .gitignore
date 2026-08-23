@@ -1,2 +1,6 @@
 build
 *.sublime-*
+.ruff_cache/
+waf*-*-*/
+.lock-waf_*
+.vscode/

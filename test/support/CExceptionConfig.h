@@ -8,7 +8,14 @@
 #ifndef _EXCEPTION_H
 #define _EXCEPTION_H
 
+#ifndef BARE_TEST
 #include "unity.h"
+#endif // BARE_TEST
+
+#ifdef BARE_TEST
+#include <stdio.h>
+#define TEST_FAIL_MESSAGE(x) fprintf(stderr, "%s", x)
+#endif // BARE_TEST
 
 extern volatile int TestingTheFallback;
 extern volatile int TestingTheFallbackId;
