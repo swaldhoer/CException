@@ -61,19 +61,19 @@ def build(bld: BuildContext):
     bld(
         features="c",
         source="lib/CException.c",
-        target="CEXCEPTION.o",
+        target="obj-cexception",
         defines=["TEST", "CEXCEPTION_USE_CONFIG_FILE"],
         includes="../test/support",
     )
     # archive the CException object into a library
-    bld(features="c cstlib", use="CEXCEPTION.o", target="CEXCEPTION")
+    bld(features="c cstlib", use="obj-cexception", target="cexception")
 
     # build, link and run the test binary
     bld(
         features="c cprogram test",
         source="test/TestException.c",
         target="test",
-        use="CEXCEPTION GCOV",
+        use="cexception GCOV",
         includes="lib test/support",
         defines=["TEST", "CEXCEPTION_USE_CONFIG_FILE"],
     )
