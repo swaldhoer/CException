@@ -43,9 +43,18 @@ def configure(cnf: ConfigurationContext):
         cnf.check_cc(lib="gcov", uselib_store="GCOV")
         cnf.env.append_unique("LINKFLAGS", ["-coverage"])
 
+    if cnf.env.CC_NAME == "clang":
+        # when using GCC we can build using coverage
+        cnf.env.append_unique(
+            "CFLAGS", ["-fprofile-instr-generate", "-fcoverage-mapping"]
+        )
+        cnf.env.append_unique(
+            "LINKFLAGS", ["-fprofile-instr-generate", "-fcoverage-mapping"]
+        )
+    if cnf.env.CC_NAME in ("clang", "gcc"):
         # We need Python and gcovr to create a coverage report
         # from the coverage data
-        cnf.find_program("python", var="PYTHON")
+        cnf.find_program("python", var="PYTHON", mandatory=False)
         cnf.find_program("gcovr", mandatory=False)
         if cnf.env.GCOVR:
             cnf.env.gcovr_module = "gcovr"
@@ -54,7 +63,7 @@ def configure(cnf: ConfigurationContext):
 def build(bld: BuildContext):
     """Build the library and tests and then run the tests."""
     # build CException using the custom configuration file as this is
-    # how later want to test it, so we need to define 
+    # how later want to test it, so we need to define
     # CEXCEPTION_USE_CONFIG_FILE
     # We also need to define TEST, as otherwise extended tests would run
     # that are not meaningful when multithreading is NOT enabled
@@ -89,25 +98,33 @@ def gcovr(bld: BuildContext):
     """Create the coverage report."""
     # gcovr is only loaded for gcc and clang as reporting does not work for
     # MSVC
-    if not bld.env.GCOVR:
-        Logs.warn("Cannot generate coverage report")
+    if not bld.env.GCOVR or not bld.env.PYTHON:
+        Logs.warn("Cannot generate coverage report.")
         return
+    gcovr_options = []
+    if bld.env.CC_NAME == "clang":
+        gcovr_options = ["--llvm", "--gcov-executable=llvm-cov"]
     python = Utils.subst_vars("${PYTHON}", bld.env)
     gcovr_module = Utils.subst_vars("${gcovr_module}", bld.env)
     root = bld.srcnode.abspath()
     cwd = bld.bldnode
-    cmd = [
-        python,
-        "-m",
-        gcovr_module,
-        "-r",
-        root,
-        "--html-details",
-        "-o",
-        "index.html",
-        "lib",
-    ]
-    
+    cmd = (
+        [
+            python,
+            "-m",
+            gcovr_module,
+        ]
+        + gcovr_options
+        + [
+            "-r",
+            root,
+            "--html-details",
+            "-o",
+            "index.html",
+            "lib",
+        ]
+    )
+
     try:
         bld.cmd_and_log(cmd, cwd=cwd, quiet=True, output=Context.BOTH)
     except Errors.WafError as e:
@@ -118,6 +135,7 @@ def gcovr(bld: BuildContext):
         bld.fatal("gcovr error.")
     report_file = bld.bldnode.find_node("index.html")
     Logs.pprint("NORMAL", f"\nReport: {report_file}")
+
 
 def std(bld: BuildContext):
     """Print stdout and stderr output to the terminal after running tests."""

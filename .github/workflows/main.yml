@@ -69,6 +69,27 @@ jobs:
           source .venv/bin/activate
           python waf configure build -v
 
+  unit-tests-linux-clang-bare:
+    name: "Unit Tests (Linux/Clang/Bare)"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Install clang + llvm-cov
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang llvm
+
+      - name: Check clang
+        run: clang --version
+
+      - name: Build with clang
+        run: |
+          export CC=clang
+          python waf configure build -v --check-c-compiler clang
+
   unit-tests-windows-gcc-bare:
     name: "Unit Tests (Windows/GCC/Bare)"
     runs-on: windows-latest

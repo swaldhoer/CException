@@ -229,8 +229,14 @@ particular places. It is a rare instance where you will need these, but they are
 Testing
 =======
 
-If you want to validate that `CException` works with your tools or that it works with your custom 
+If you want to validate that CException works with your tools or that it works with your custom 
 configuration, you may want to run the included test suite. This is the test suite (along with real 
 projects we've used it on) that we use to make sure that things actually work the way we claim.
-The test suite makes use of `Ceedling`, which uses the Unity Test Framework. It will require a native C compiler. 
-The example makefile and `rakefile` both use gcc. 
+
+There are two ways of testing CException, using the unit testing frame work `Ceedling` or bare metal.
+- `Ceedling`: The test suite makes use of `Ceedling`, which uses the Unity Test Framework. It will require a native C compiler. 
+  The example makefile and `rakefile` both use gcc.
+- Bare metal: The test suite makes use of `waf`, which is used as build an test framework.
+  It will require a native C compiler (GCC/Clang on Linux or GCC/MSVC on Windows).
+  Usage: `python waf configure build`
+  A coverage report is created if GCC or Clang are used and GCOVR is available.
