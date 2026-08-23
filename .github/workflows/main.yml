@@ -11,25 +11,25 @@ on:
 
 jobs:
   # Job: Unit test suite
-  unit-tests:
-    # name: "Unit Tests (Ceedling GCC)"
-    # runs-on: ubuntu-latest
-    # steps:
-    #   # Checks out repository under $GITHUB_WORKSPACE
-    #   - name: Checkout Latest Repo
-    #     uses: actions/checkout@v7
-    #     with:
-    #       submodules: recursive
+  unit-tests-linux-gcc-ceedling:
+    name: "Unit Tests (Linux/GCC/Ceedling)"
+    runs-on: ubuntu-latest
+    steps:
+      # Checks out repository under $GITHUB_WORKSPACE
+      - name: Checkout Latest Repo
+        uses: actions/checkout@v7
+        with:
+          submodules: recursive
           
-    #   # Install Ceedling
-    #   - name: Install Ceedling
-    #     run: |
-    #       sudo gem install ceedling
+      # Install Ceedling
+      - name: Install Ceedling
+        run: |
+          sudo gem install ceedling
 
-    #   # Run Tests
-    #   - name: Run All Self Tests
-    #     run: |
-    #       ceedling clobber test:all
+      # Run Tests
+      - name: Run All Self Tests
+        run: |
+          ceedling clobber test:all
 
     name: "Unit Tests (Linux/GCC/Bare)"
     runs-on: ubuntu-latest
