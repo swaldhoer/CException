@@ -31,7 +31,7 @@ jobs:
     #     run: |
     #       ceedling clobber test:all
 
-    name: "Unit Tests (Bare GCC)"
+    name: "Unit Tests (Linux/GCC/Bare)"
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Latest Repo
@@ -62,8 +62,8 @@ jobs:
           source .venv/bin/activate
           python waf configure build -v
 
-  unit-tests-windows-msys2-native:
-    name: "Unit Tests (MSYS2 GCC)"
+  unit-tests-windows-gcc-bare:
+    name: "Unit Tests (Windows/GCC/Bare)"
     runs-on: windows-latest
 
     steps:
@@ -114,3 +114,39 @@ jobs:
         run: |
           .\.venv\Scripts\activate
           python waf configure build -v --check-c-compiler gcc
+
+
+  unit-tests-windows-msvc-bare:
+    name: "Unit Tests (Windows/MSVC/Bare)"
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout Latest Repo
+        uses: actions/checkout@v4
+
+      - name: Install Python 3
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Cache pip packages
+        uses: actions/cache@v4
+        with:
+          path: ~\AppData\Local\pip\Cache
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Create virtual environment
+        shell: bash
+        run: |
+          python3 -m venv .venv
+          source .venv/Scripts/activate
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run build and test (MSVC)
+        shell: bash
+        run: |
+          source .venv/Scripts/activate
+          python waf configure build -v --check-c-compiler msvc
