@@ -108,8 +108,6 @@ jobs:
       - name: Build with clang
         run: |
           source .venv/bin/activate
-          export LLVM_PROFILE_FILE="coverage.profraw"
-          export CC=clang
           python waf configure build -v --check-c-compiler clang
 
   unit-tests-windows-gcc-bare:
