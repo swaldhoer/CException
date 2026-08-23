@@ -77,6 +77,26 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
 
+      - name: Install Python 3
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.x"
+
+      - name: Cache pip packages
+        uses: actions/cache@v6
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Create virtual environment
+        run: |
+          python3 -m venv .venv
+          source .venv/bin/activate
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
       - name: Install clang + llvm-cov
         run: |
           sudo apt-get update
@@ -87,6 +107,7 @@ jobs:
 
       - name: Build with clang
         run: |
+          source .venv/bin/activate
           export CC=clang
           python waf configure build -v --check-c-compiler clang
 
