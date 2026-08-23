@@ -17,7 +17,7 @@ jobs:
     # steps:
     #   # Checks out repository under $GITHUB_WORKSPACE
     #   - name: Checkout Latest Repo
-    #     uses: actions/checkout@v4
+    #     uses: actions/checkout@v7
     #     with:
     #       submodules: recursive
           
@@ -35,15 +35,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Latest Repo
-        uses: actions/checkout@v7.0.1
+        uses: actions/checkout@v7
           
       - name: Install Python 3
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: "3.x"
 
       - name: Cache pip packages
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
@@ -68,7 +68,7 @@ jobs:
 
     steps:
       - name: Checkout Latest Repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Install MSYS2
         uses: msys2/setup-msys2@v2
@@ -89,12 +89,12 @@ jobs:
         run: gcc --version
 
       - name: Install Python 3 (native Windows)
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: "3.x"
 
       - name: Cache pip packages
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~\AppData\Local\pip\Cache
           key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
@@ -122,15 +122,15 @@ jobs:
 
     steps:
       - name: Checkout Latest Repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Install Python 3
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: "3.x"
 
       - name: Cache pip packages
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~\AppData\Local\pip\Cache
           key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
@@ -138,15 +138,13 @@ jobs:
             ${{ runner.os }}-pip-
 
       - name: Create virtual environment
-        shell: bash
         run: |
           python3 -m venv .venv
-          source .venv/Scripts/activate
+          .\.venv\Scripts\activate
           pip install --upgrade pip
           pip install -r requirements.txt
 
       - name: Run build and test (MSVC)
-        shell: bash
         run: |
-          source .venv/Scripts/activate
+          .\.venv\Scripts\activate
           python waf configure build -v --check-c-compiler msvc
