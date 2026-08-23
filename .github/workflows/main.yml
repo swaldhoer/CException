@@ -12,7 +12,7 @@ on:
 jobs:
   # Job: Unit test suite
   unit-tests:
-    # name: "Unit Tests"
+    # name: "Unit Tests (Ceedling GCC)"
     # runs-on: ubuntu-latest
     # steps:
     #   # Checks out repository under $GITHUB_WORKSPACE
@@ -61,3 +61,56 @@ jobs:
         run: |
           source .venv/bin/activate
           python waf configure build -v
+
+  unit-tests-windows-msys2-native:
+    name: "Unit Tests (MSYS2 GCC)"
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout Latest Repo
+        uses: actions/checkout@v4
+
+      - name: Install MSYS2
+        uses: msys2/setup-msys2@v2
+        with:
+          update: true
+          install: >-
+            mingw-w64-x86_64-gcc
+            mingw-w64-x86_64-make
+            mingw-w64-x86_64-binutils
+
+      - name: Add MSYS2 MinGW64 to PATH
+        shell: pwsh
+        run: |
+          echo "C:\msys64\mingw64\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+
+      - name: Check GCC
+        shell: pwsh
+        run: gcc --version
+
+      - name: Install Python 3 (native Windows)
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Cache pip packages
+        uses: actions/cache@v4
+        with:
+          path: ~\AppData\Local\pip\Cache
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Create virtual environment
+        shell: pwsh
+        run: |
+          python -m venv .venv
+          .\.venv\Scripts\activate
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run waf build with MSYS2 GCC
+        shell: pwsh
+        run: |
+          .\.venv\Scripts\activate
+          python waf configure build -v --check-c-compiler gcc
