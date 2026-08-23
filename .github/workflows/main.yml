@@ -26,11 +26,11 @@ jobs:
         with:
           ruby-version: "3.1"
           bundler-cache: true
-          
+
       # Install Ceedling
       - name: Install Ceedling
         run: |
-          sudo gem install ceedling
+          gem install ceedling --no-document
 
       # Run Tests
       - name: Run All Self Tests
