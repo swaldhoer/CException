@@ -22,7 +22,8 @@
 #define TEST_FAIL_MESSAGE(x) fprintf(stderr, "%s", x)
 #endif // TEST_FAIL_MESSAGE
 
-void TEST_ASSERT_EQUAL(unsigned int a, CEXCEPTION_T b) {
+// Due to 'test/support/CExceptionConfig.h' CEXCEPTION_T is defined as int.
+void TEST_ASSERT_EQUAL(int a, CEXCEPTION_T b) {
   assert(a == b);
 }
 

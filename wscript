@@ -52,6 +52,16 @@ def configure(cnf: ConfigurationContext):
             "LINKFLAGS", ["-fprofile-instr-generate", "-fcoverage-mapping"]
         )
     if cnf.env.CC_NAME in ("clang", "gcc"):
+        cnf.env.append_unique(
+            "CFLAGS",
+            [
+                "-Wall",
+                "-Wextra",
+                "-Werror",
+                "-Wunused-function",  # we need this so we can ensure all test functions are called!
+            ],
+        )
+
         # We need Python and gcovr to create a coverage report
         # from the coverage data
         cnf.find_program("python", var="PYTHON", mandatory=False)
@@ -103,7 +113,11 @@ def gcovr(bld: BuildContext):
         return
     gcovr_options = []
     if bld.env.CC_NAME == "clang":
-        gcovr_options = ["--llvm", "--gcov-executable=llvm-cov"]
+        gcovr_options = [
+            "--gcov-executable=llvm-cov",
+            "--llvm-cov-binary=llvm-cov",
+            "--llvm-profdata-executable=llvm-profdata",
+        ]
     python = Utils.subst_vars("${PYTHON}", bld.env)
     gcovr_module = Utils.subst_vars("${gcovr_module}", bld.env)
     root = bld.srcnode.abspath()
