@@ -72,7 +72,7 @@ def build(bld: BuildContext):
     bld(
         features="c cprogram test",
         source="test/TestException.c",
-        target="test",
+        target="TestException",
         use="cexception GCOV",
         includes="lib test/support",
         defines=["TEST", "CEXCEPTION_USE_CONFIG_FILE"],
