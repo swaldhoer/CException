@@ -51,7 +51,6 @@ def configure(cnf: ConfigurationContext):
         cnf.env.append_unique(
             "LINKFLAGS", ["-fprofile-instr-generate", "-fcoverage-mapping"]
         )
-        cnf.env.LLVM_PROFILE_FILE="coverage.profraw"
 
     if cnf.env.CC_NAME in ("clang", "gcc"):
         cnf.env.append_unique(
