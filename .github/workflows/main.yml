@@ -31,6 +31,7 @@ jobs:
         run: |
           ceedling clobber test:all
 
+  unit-tests-linux-gcc-bare:
     name: "Unit Tests (Linux/GCC/Bare)"
     runs-on: ubuntu-latest
     steps:
