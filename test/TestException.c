@@ -13,7 +13,7 @@ volatile int TestingTheFallbackId;
 
 void setUp(void)
 {
-    CExceptionFrames[0].pFrame = NULL;
+    CExceptionFrames[0].pFrame = 0;
     TestingTheFallback = 0;
 }
 
