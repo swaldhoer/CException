@@ -27,17 +27,11 @@ extern volatile int TestingTheFallbackId;
 #define CEXCEPTION_NONE (1234)
 
 // Optionally define a special handler for unhandled exceptions
-#define CEXCEPTION_NO_CATCH_HANDLER(id)             \
-{                                                   \
-    if (!TestingTheFallback)                        \
-    {                                               \
-        TEST_FAIL_MESSAGE("Unexpected Exception!"); \
-    }                                               \
-    else                                            \
-    {                                               \
-        TestingTheFallbackId = id;                  \
-        TestingTheFallback--;                       \
-    }                                               \
+#define CEXCEPTION_NO_CATCH_HANDLER(id)                                                   \
+{                                                                                         \
+    TEST_ASSERT_GREATER_THAN_INT_MESSAGE(0, TestingTheFallback, "Unexpected Exception!"); \
+    TestingTheFallbackId = id;                                                            \
+    TestingTheFallback--;                                                                 \
 }
 
 // Multi-Tasking environments will need a couple of macros defined to make this library

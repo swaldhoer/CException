@@ -31,7 +31,7 @@ jobs:
       # Install Ceedling
       - name: Install Ceedling
         run: |
-          gem install ceedling --no-document
+          gem install ceedling
 
       # Run Tests
       - name: Run All Self Tests
