@@ -13,8 +13,17 @@
 #endif // BARE_TEST
 
 #ifdef BARE_TEST
+#include <assert.h>
+#include <stdbool.h>
 #include <stdio.h>
-#define TEST_FAIL_MESSAGE(x) fprintf(stderr, "%s", x)
+#define TEST_ASSERT_GREATER_THAN_INT_MESSAGE(x, y, msg) \
+{ \
+    bool violation = x > y; \
+    if (violation) { \
+        fprintf(stderr, "%s", msg); \
+        assert(0);\
+    } \
+}
 #endif // BARE_TEST
 
 extern volatile int TestingTheFallback;
